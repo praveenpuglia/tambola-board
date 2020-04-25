@@ -2,26 +2,60 @@
   <div class="board-wrapper">
     <div class="board">
       <span
-        class="number"
-        :class="{ checked: checked.includes(number) }"
+        class="number ff-mono"
+        :class="{
+          checked: checked.includes(number),
+          current: number === currentNumber
+        }"
         v-for="number in numbers"
         :key="number"
         >{{ number }}</span
       >
       <div class="game-over" v-if="isOver">
-        <h1 class="game-over__message">
+        <h1 class="game-over__message ff-mono">
           It's Over
         </h1>
       </div>
     </div>
     <div class="controls">
-      <button :disabled="isOver" @click="pick">Pick</button>
+      <button class="button button-pick" :disabled="isOver" @click="pick">
+        Pick
+      </button>
+      <div class="last-numbers">
+        <h2>
+          Previous {{ lastNumbers.length }}
+          {{ lastNumbers.length > 1 ? 'Numbers' : 'Number' }}
+        </h2>
+        <div class="last-numbers__list">
+          <span
+            class="number checked ff-mono"
+            v-for="num in lastNumbers"
+            :key="num"
+            >{{ num }}</span
+          >
+        </div>
+      </div>
+      <button class="button button-reset" @click="reset">
+        Reset
+      </button>
     </div>
   </div>
 </template>
 <script>
 import { shuffle } from 'lodash-es';
 export default {
+  created() {
+    if (!localStorage.TAMBOLA_BOARD_STATE) {
+      localStorage.TAMBOLA_BOARD_STATE = JSON.strigify({
+        currentNumber: 0,
+        checked: []
+      });
+    } else {
+      const state = this.getState();
+      this.checked = state.checked;
+      this.currentNumber = state.currentNumber;
+    }
+  },
   data() {
     return {
       checked: [],
@@ -34,14 +68,35 @@ export default {
     },
     isOver() {
       return this.checked.length === 90;
+    },
+    lastNumbers() {
+      return this.checked.slice(-9, -1).reverse();
     }
   },
   methods: {
     pick() {
       const diff = this.numbers.filter(num => !this.checked.includes(num));
       const index = Math.floor(Math.random() * diff.length);
-      this.pickedNumber = shuffle(diff)[index];
-      this.checked.push(this.pickedNumber);
+      this.currentNumber = shuffle(diff)[index];
+      this.checked.push(this.currentNumber);
+      this.setState({
+        currentNumber: this.currentNumber,
+        checked: this.checked
+      });
+    },
+    reset() {
+      const shouldReset = window.confirm('Are you sure you want to reset?');
+      if (shouldReset) {
+        this.currentNumber = 0;
+        this.checked = [];
+        delete localStorage.TAMBOLA_BOARD_STATE;
+      }
+    },
+    getState() {
+      return JSON.parse(localStorage.TAMBOLA_BOARD_STATE);
+    },
+    setState(data) {
+      localStorage.TAMBOLA_BOARD_STATE = JSON.stringify(data);
     }
   }
 };
@@ -50,11 +105,15 @@ export default {
 .board-wrapper {
   display: grid;
   grid-template-columns: 100vmin 1fr;
+  height: 100vh;
+  width: 100vw;
   @media (orientation: portrait) {
     & {
       grid-template-columns: 1fr;
+      grid-template-rows: 100vmin 1fr;
     }
   }
+  overflow: hidden;
 }
 .board {
   width: calc(100vmin);
@@ -65,12 +124,11 @@ export default {
   grid-template-columns: repeat(10, 1fr);
   align-items: center;
   justify-items: center;
-  font-size: 4vmin;
   position: relative;
 }
 .number {
   border: 1px solid;
-  font-family: 'Manrope', 'Courier New', Courier, monospace;
+  font-size: 4vmin;
   border-radius: 50%;
   width: 8vmin;
   height: 8vmin;
@@ -79,6 +137,7 @@ export default {
   justify-content: center;
   font-weight: bold;
   color: #ccc;
+  transition: 0.5s;
   &.checked {
     background-color: #ff6666;
     color: white;
@@ -87,6 +146,17 @@ export default {
       transparent 50%,
       rgba(0, 0, 0, 0.4)
     );
+  }
+  &.current {
+    box-shadow: 0 0 0 0.75vmin gold;
+    animation: zoom-out ease-in 0.3s;
+    color: gold;
+    background-color: rebeccapurple;
+  }
+}
+@keyframes zoom-out {
+  0% {
+    transform: scale(5);
   }
 }
 .game-over {
@@ -100,11 +170,44 @@ export default {
   display: grid;
   justify-content: center;
   align-items: center;
-  &__message {
-    font-family: 'Manrope', 'Courier New', Courier, monospace;
-  }
 }
 .controls {
   background: #333;
+  padding: 2vmin;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+.button {
+  display: block;
+  padding: 2vmin 4vmin;
+  font-size: 4vmin;
+  width: 100%;
+  font-weight: 900;
+  color: white;
+  border: none;
+  background-color: gold;
+  border-radius: 4vmin;
+  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));
+  &:active {
+    background-image: none;
+  }
+}
+.last-numbers {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.2);
+  margin-top: 2vmin;
+  padding: 4vmin;
+  border-radius: 4vmin;
+  box-shadow: inset 0 0 1vmin 0 rgba(0, 0, 0, 0.6);
+  &__list {
+    margin-top: 2vmin;
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.button-reset {
+  margin-top: 2vmin;
+  background-color: crimson;
 }
 </style>
