@@ -137,7 +137,8 @@ export default {
   justify-content: center;
   font-weight: bold;
   color: #ccc;
-  transition: 0.5s;
+  transition: 0.3s;
+  will-change: transform;
   &.checked {
     background-color: #ff6666;
     color: white;
@@ -156,7 +157,7 @@ export default {
 }
 @keyframes zoom-out {
   0% {
-    transform: scale(5);
+    transform: scale(5) rotate(180deg);
   }
 }
 .game-over {
