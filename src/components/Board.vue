@@ -34,7 +34,7 @@
         </h2>
         <div class="last-numbers__list">
           <span
-            class="number checked ff-mono"
+            class="number checked ff-mono number-sm"
             v-for="num in lastNumbers"
             :key="num"
             >{{ num }}</span
@@ -156,13 +156,19 @@ export default {
   color: #ccc;
   transition: 0.3s;
   will-change: transform;
+  &.number-sm {
+    font-size: 3vmin;
+    width: 6vmin;
+    height: 6vmin;
+  }
   &.checked {
     background-color: #ff6666;
     color: white;
+    text-shadow: 0 2px rgba(0, 0, 0, 0.2);
     background-image: radial-gradient(
-      circle at 10px 10px,
+      circle at 0.5vmin 0.5vmin,
       transparent 50%,
-      rgba(0, 0, 0, 0.4)
+      #980e0e
     );
   }
   &.current {
@@ -222,6 +228,9 @@ export default {
     margin-top: 2vmin;
     display: flex;
     justify-content: space-between;
+    .number {
+      background-color: rebeccapurple;
+    }
   }
 }
 .button-reset {
