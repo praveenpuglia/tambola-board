@@ -1,6 +1,12 @@
 <template>
   <div class="board-wrapper">
     <div class="board">
+      <input
+        ref="copyInput"
+        type="text"
+        class="number-copy"
+        v-model="currentNumber"
+      />
       <span
         class="number ff-mono"
         :class="{
@@ -71,6 +77,9 @@ export default {
     },
     lastNumbers() {
       return this.checked.slice(-9, -1).reverse();
+    },
+    copyInput() {
+      return this.$refs.copyInput;
     }
   },
   methods: {
@@ -83,6 +92,14 @@ export default {
         currentNumber: this.currentNumber,
         checked: this.checked
       });
+      this.$nextTick(() => {
+        this.copyToClipboard();
+      });
+    },
+    copyToClipboard() {
+      this.copyInput.focus();
+      this.copyInput.select();
+      document.execCommand('copy');
     },
     reset() {
       const shouldReset = window.confirm('Are you sure you want to reset?');
@@ -210,5 +227,9 @@ export default {
 .button-reset {
   margin-top: 2vmin;
   background-color: crimson;
+}
+.number-copy {
+  position: absolute;
+  opacity: 0;
 }
 </style>
