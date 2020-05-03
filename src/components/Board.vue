@@ -24,7 +24,12 @@
       </div>
     </div>
     <div class="controls">
-      <button class="button button-pick" :disabled="isOver" @click="pick">
+      <button
+        ref="pickerButton"
+        class="button button-pick"
+        :disabled="isOver"
+        @click="pick"
+      >
         Pick
       </button>
       <div class="last-numbers">
@@ -94,6 +99,7 @@ export default {
       });
       this.$nextTick(() => {
         this.copyToClipboard();
+        this.$refs.pickerButton.focus();
       });
     },
     copyToClipboard() {
