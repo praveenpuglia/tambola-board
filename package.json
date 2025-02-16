@@ -28,8 +28,7 @@
     "sass": "^1.85.0",
     "sass-loader": "^16.0.4",
     "vite": "^6.1.0",
-    "vite-plugin-eslint": "^1.8.1",
-    "yorkie": "^2.0.0"
+    "vite-plugin-eslint": "^1.8.1"
   },
   "husky": {
     "hooks": {
