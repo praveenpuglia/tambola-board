@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <Board />
+    <TambolaBoard />
   </div>
 </template>
 
 <script>
-import Board from './components/Board.vue';
+import TambolaBoard from './components/TambolaBoard.vue';
 
 export default {
   name: 'App',
   components: {
-    Board
+    TambolaBoard
   }
 };
 </script>
