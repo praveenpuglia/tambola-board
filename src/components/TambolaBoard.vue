@@ -3,24 +3,22 @@
     <div class="board">
       <input
         ref="copyInput"
+        v-model="currentNumber"
         type="text"
         class="number-copy"
-        v-model="currentNumber"
       />
       <span
+        v-for="number in numbers"
+        :key="number"
         class="number ff-mono"
         :class="{
           checked: checked.includes(number),
           current: number === currentNumber
         }"
-        v-for="number in numbers"
-        :key="number"
         >{{ number }}</span
       >
-      <div class="game-over" v-if="isOver">
-        <h1 class="game-over__message ff-mono">
-          It's Over
-        </h1>
+      <div v-if="isOver" class="game-over">
+        <h1 class="game-over__message ff-mono">It's Over</h1>
       </div>
     </div>
     <div class="controls">
@@ -39,34 +37,20 @@
         </h2>
         <div class="last-numbers__list">
           <span
-            class="number checked ff-mono number-sm"
             v-for="num in lastNumbers"
             :key="num"
+            class="number checked ff-mono number-sm"
             >{{ num }}</span
           >
         </div>
       </div>
-      <button class="button button-reset" @click="reset">
-        Reset
-      </button>
+      <button class="button button-reset" @click="reset">Reset</button>
     </div>
   </div>
 </template>
 <script>
 import { shuffle } from 'lodash-es';
 export default {
-  created() {
-    if (!localStorage.TAMBOLA_BOARD_STATE) {
-      localStorage.TAMBOLA_BOARD_STATE = JSON.strigify({
-        currentNumber: 0,
-        checked: []
-      });
-    } else {
-      const state = this.getState();
-      this.checked = state.checked;
-      this.currentNumber = state.currentNumber;
-    }
-  },
   data() {
     return {
       checked: [],
@@ -87,9 +71,21 @@ export default {
       return this.$refs.copyInput;
     }
   },
+  created() {
+    if (!localStorage.TAMBOLA_BOARD_STATE) {
+      localStorage.TAMBOLA_BOARD_STATE = JSON.stringify({
+        currentNumber: 0,
+        checked: []
+      });
+    } else {
+      const state = this.getState();
+      this.checked = state.checked;
+      this.currentNumber = state.currentNumber;
+    }
+  },
   methods: {
     pick() {
-      const diff = this.numbers.filter(num => !this.checked.includes(num));
+      const diff = this.numbers.filter((num) => !this.checked.includes(num));
       const index = Math.floor(Math.random() * diff.length);
       this.currentNumber = shuffle(diff)[index];
       this.checked.push(this.currentNumber);
@@ -136,7 +132,9 @@ export default {
       grid-template-rows: 100vmin 1fr;
     }
   }
-  overflow: hidden;
+  & {
+    overflow: hidden;
+  }
 }
 .board {
   width: calc(100vmin);
